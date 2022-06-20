@@ -1,4 +1,36 @@
 /**
+ * 98. Validate Binary Search Tree
+ * 
+ * @param {TreeNode} root
+ * @return {boolean}
+ */
+var isValidBST = function(root) {
+    const arr = [];
+    traverseInOrder(root, arr);
+    
+    for (let i = 0; i < arr.length-1; i++) {
+        if (arr[i] >= arr[i+1]) {
+            return false;
+        }
+    }
+    
+    return true;
+    
+    function traverseInOrder(root, arr) {
+        if (root.left) {
+            traverseInOrder(root.left, arr);
+        }
+        
+        arr.push(root.val);
+        
+        if (root.right) {
+            traverseInOrder(root.right, arr);
+        }
+    }
+};
+
+
+/**
  * 100. Same Tree
  * 
  * @param {TreeNode} p
@@ -67,6 +99,33 @@ var maxDepth = function(root) {
 
 
 /**
+ * 105. Construct Binary Tree from Preorder and Inorder Traversal
+ * 
+ * @param {number[]} preorder
+ * @param {number[]} inorder
+ * @return {TreeNode}
+ */
+var buildTree = function(preorder, inorder) {
+    let root;
+    if (preorder.length) {
+        root = new TreeNode(preorder.shift());
+        let mid = inorder.indexOf(root.val),
+            leftInorder = inorder.slice(0, mid),
+            rightInorder = inorder.slice(mid + 1);
+
+        if (leftInorder.length) {
+            root.left = buildTree(preorder, leftInorder);
+        }
+
+        if (rightInorder.length) {
+            root.right = buildTree(preorder, rightInorder);
+        }
+    }
+    return root;
+};
+
+
+/**
  * 124. Binary Tree Maximum Path Sum
  * 
  * @param {TreeNode} root
@@ -119,6 +178,49 @@ var invertTree = function(root) {
         invertTree(root.right);
     }
     return root;
+};
+
+
+/**
+ * 230. Kth Smallest Element in a BST
+ * 
+ * @param {TreeNode} root
+ * @param {number} k
+ * @return {number}
+ */
+var kthSmallest = function(root, k) {
+    const arr = [];
+    traverse(root, arr);
+    return arr[k-1];
+    
+    function traverse(root, arr) {
+        if (root) {
+            traverse(root.left, arr);
+            arr.push(root.val);
+            traverse(root.right, arr);            
+        }
+    }
+};
+
+
+/**
+ * 235. Lowest Common Ancestor of a Binary Search Tree
+ * 
+ * @param {TreeNode} root
+ * @param {TreeNode} p
+ * @param {TreeNode} q
+ * @return {TreeNode}
+ */
+var lowestCommonAncestor = function(root, p, q) {
+    if (p.val < root.val && q.val < root.val) {
+        return lowestCommonAncestor(root.left, p, q);
+    }
+    else if (p.val > root.val && q.val > root.val) {
+        return lowestCommonAncestor(root.right, p, q);
+    }
+    else {
+        return root;
+    }
 };
 
 
@@ -204,5 +306,46 @@ var deserialize = function(data) {
            root.right = new TreeNode(map.get(rightIndex));          
            buildBinaryTree(map, rightIndex, root.right)
         }
+    }
+};
+
+
+/**
+ * 572. Subtree of Another Tree
+ * 
+ * @param {TreeNode} root
+ * @param {TreeNode} subRoot
+ * @return {boolean}
+ */
+var isSubtree = function(root, subRoot) {
+    return preorderTraverse(root, subRoot);
+    
+    function preorderTraverse(root, subRoot) {
+        if (isSameTreeHelper(root, subRoot)) {
+            return true;
+        }
+        
+        if (root.left && preorderTraverse(root.left, subRoot)) {
+            return true;
+        }
+        
+        if (root.right && preorderTraverse(root.right, subRoot)) {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    function isSameTreeHelper(root, subRoot) {
+        if (root && subRoot) {
+            if (root.val == subRoot.val) {
+                return isSameTreeHelper(root.left, subRoot.left) &&
+                    isSameTreeHelper(root.right, subRoot.right);
+            }
+        }
+        else if (!root && !subRoot) {
+            return true;
+        }
+        return false;
     }
 };
